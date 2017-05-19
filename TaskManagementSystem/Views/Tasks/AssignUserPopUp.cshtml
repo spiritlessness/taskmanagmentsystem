@@ -1,0 +1,17 @@
+﻿@model TaskManagementSystem.Models.Task
+
+ @using (Html.BeginForm("AssignUserPopUp", "Tasks", FormMethod.Post, new { @class = "modalPopUp" }))
+ {
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">&times;</a>
+        <p>Назначить пользователя</p>
+    </div>
+    <div class="modal-body">
+        <input name="taskId" type="hidden" value="@Model.ID" />
+        @Html.DropDownList("AssignedUserId", null, htmlAttributes: new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.AssignedUserId, "", new { @class = "text-danger" })
+     </div>
+    <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" value="Изменить" />
+    </div>
+}

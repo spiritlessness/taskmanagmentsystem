@@ -1,0 +1,16 @@
+﻿@model TaskManagementSystem.Models.Task
+
+ @using (Html.BeginForm("DonePopUp", "Tasks", FormMethod.Post, new { enctype = "multipart/form-data" , @class="modalPopUp"}))
+ {
+    <div class="modal-header">
+        <p>Внести результат</p>
+    </div>
+    <div class="modal-body">
+        <input name="taskId" type="hidden" value="@Model.ID" />
+        <input name="resultText"type="text" value=""/>
+        @Html.Partial("CreateAttachment")
+     </div>
+    <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" value="Изменить" />
+    </div>
+}

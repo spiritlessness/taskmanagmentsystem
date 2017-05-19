@@ -1,0 +1,37 @@
+﻿@model TaskManagementSystem.Models.Project
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Are you sure you want to delete this?</h2>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.TeamLead)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TeamLead.UserName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ProjectName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProjectName)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Назад к списку", "Index")
+        </div>
+    }
+</div>

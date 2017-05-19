@@ -1,0 +1,75 @@
+﻿@model IEnumerable<TaskManagementSystem.Models.Task>
+
+@{
+    ViewBag.Title = "Index";
+    var assignedTasks = (List<TaskManagementSystem.Models.Task>)ViewBag.assignedTasks;
+    var overdueTasks = (List<TaskManagementSystem.Models.Task>)ViewBag.overdueTaks;
+    var soonEndTasks = (List<TaskManagementSystem.Models.Task>)ViewBag.soonEndTasks;
+}
+
+<h2>Index</h2>
+
+@if (assignedTasks != null && assignedTasks.Count != 0)
+{
+    <p>
+     Ваши задачи:
+    </p>
+    @Html.Partial("ShowListTasks", assignedTasks)
+
+    if (overdueTasks != null && overdueTasks.Count != 0)
+    {
+        <p>
+            Невыполненные задачи во время:
+        </p>
+        @Html.Partial("ShowListTasks", overdueTasks)
+    }
+
+    if (soonEndTasks != null && soonEndTasks.Count != 0)
+    {
+        <p>
+            Заканчиваются через 1 день:
+        </p>
+        @Html.Partial("ShowListTasks", soonEndTasks)
+    }
+}
+else
+{
+    <p>В данный момент у вас нет задач</p>
+}
+
+
+            
+            
+@section Scripts {
+<script type="text/javascript">
+    function GetNotifications() {
+        $.getJSON('@Url.Action("GetNotifications")', function (data) {
+            
+            for (var i = 0; i < data.Data.length; i++) {
+                console.log(data.Data[i].Key);
+                toastr[data.Data[i].Key](data.Data[i].Value)
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "positionClass": "toast-top-right",
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+
+        GetNotifications();
+    })
+ </script>
+}
+    

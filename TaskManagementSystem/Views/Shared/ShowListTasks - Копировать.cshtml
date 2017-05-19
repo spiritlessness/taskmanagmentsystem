@@ -1,0 +1,84 @@
+﻿@model IEnumerable<TaskManagementSystem.Models.Task>
+
+@if (Model != null && Model.Count() != 0)
+{
+    <div class="table-responsive">
+        <table class="table display responsive no-wrap" style="width:100%;background-color:chocolate;color:black">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Title)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AssignedUser)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Project.ProjectName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TaskType.Type)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TaskPriority.Priority)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TaskStatus.Status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.UserCreate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DateStart)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ScheduledTime)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.Title, "Details","Tasks", new { id = item.ID },null)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AssignedUser.UserName)
+                        </td>
+                        <td>
+                            @Html.ActionLink(item.Project.ProjectName, "Details", "Projects", new { id = item.ProjectId }, null)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TaskType.Type)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TaskPriority.Priority)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TaskStatus.Status)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserCreate.UserName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateStart)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ScheduledTime)
+                        </td>
+                        @if (item.UserCreate.UserName == User.Identity.Name || User.IsInRole("Admin"))
+                        {
+                            <td>
+                                @Html.ActionLink("Edit", "Edit", "Tasks", new { id = item.ID }, new { @class = "btn btn-primary btn-sm glyphicon glyphicon-edit" }) |
+
+                                @Html.ActionLink("Delete", "Delete", "Tasks", new { id = item.ID }, new { @class = "btn btn-danger btn-sm glyphicon glyphicon-remove" })
+                            </td>
+                        }
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+}

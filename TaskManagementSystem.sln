@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagementSystem", "TaskManagementSystem\TaskManagementSystem.csproj", "{4C48F1FE-889A-4C5B-A7B4-7BB346877956}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{CD760B25-72CC-4107-8E98-5C0A27ACA284}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4C48F1FE-889A-4C5B-A7B4-7BB346877956}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C48F1FE-889A-4C5B-A7B4-7BB346877956}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C48F1FE-889A-4C5B-A7B4-7BB346877956}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C48F1FE-889A-4C5B-A7B4-7BB346877956}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD760B25-72CC-4107-8E98-5C0A27ACA284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD760B25-72CC-4107-8E98-5C0A27ACA284}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD760B25-72CC-4107-8E98-5C0A27ACA284}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD760B25-72CC-4107-8E98-5C0A27ACA284}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

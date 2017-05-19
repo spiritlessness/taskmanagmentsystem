@@ -1,0 +1,20 @@
+﻿@model IEnumerable<TaskManagementSystem.Models.Task>
+
+@{
+    ViewBag.Title = "Index";
+}
+<div><span id="notification" style="color:red;font-size:15px;"></span></div>
+
+<h2>Задача</h2>
+
+<p>
+    @Html.ActionLink("Добавить", "Create")
+    @Html.ActionLink("Добавить по шаблону", "Create", new { fromTemplate = true })
+    @Html.ActionLink("Добавить шаблон", "Create", new { template = true })
+</p>
+@Html.Partial("ShowListTasks", Model)
+
+
+@section scripts {
+
+}

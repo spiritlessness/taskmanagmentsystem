@@ -1,0 +1,62 @@
+﻿@model TaskManagementSystem.Models.AdminUserRolesViewModel
+
+@{
+    ViewBag.Title = "Пользователи";
+}
+
+<h2>BrowseUsers</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            UserName
+        </th>
+        <th>
+            Roles
+        </th>
+        <th>
+            
+        </th>
+    </tr>
+    @foreach(var user in Model.Users)
+    { 
+        <tr>
+            <td>
+                 @user.Key.UserName
+</td>
+            <td>
+               @foreach(string a in @user.Value)
+               {
+                       @a
+               }
+            </td>
+@if (Context.User.Identity.Name != @user.Key.UserName)
+{
+            <td>
+             
+               @if(!(@user.Value as List<string>).Contains("Admin"))
+               {
+                   @Html.ActionLink("Сделать администратором", "MakeAdmin", new { id = @user.Key.Id })
+               }
+               else
+               {
+                   @Html.ActionLink("Убрать из администраторов", "DeleteAdmin", new { id = @user.Key.Id })
+               }
+               
+               
+            </td>
+            <td>
+              @Html.ActionLink("Удалить", "DeleteUser", new { id = @user.Key.Id })
+  
+            </td>
+}
+            <td>
+                @if(@user.Key.isConfirmed == false)
+                {
+                    @Html.ActionLink("Подтвердить", "ConfirmUser", new { id = @user.Key.Id })
+                }
+            </td>
+        </tr>
+    }
+
+</table>

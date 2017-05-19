@@ -1,0 +1,19 @@
+﻿@model IEnumerable<TaskManagementSystem.Models.Task>
+
+
+@if (Model != null && Model.Count() != 0)
+{
+    <div class="tasks-notes">
+        <ul class="ul-tasks-notes">
+            @foreach (var item in Model)
+            {
+                <li class="li-tasks-notes">
+                    <a href="@Url.Action("Details","Tasks",new { id = item.ID })">
+                        <h2> @item.Title</h2>
+                        <p> @item.Description</p>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+}

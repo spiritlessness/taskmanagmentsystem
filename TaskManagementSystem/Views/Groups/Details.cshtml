@@ -1,0 +1,30 @@
+﻿@model TaskManagementSystem.Entities.Group
+
+@{
+    ViewBag.Title = "Details";
+    var users = Model.Users.ToList();
+}
+<div>
+    <h4>@Html.DisplayFor(model => model.Name)</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        @if (users != null && users.Count > 0)
+        {
+        <dt>Пользователи:</dt>
+            <dd>
+                <div>
+                    <ul>
+                        @foreach (var usr in users)
+                        {
+                            <li><p><em>@usr.UserName</em></p></li>
+                        }
+                    </ul>
+                </div>
+            </dd>
+        }
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Редактировать", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Назад к списку", "Index")
+</p>

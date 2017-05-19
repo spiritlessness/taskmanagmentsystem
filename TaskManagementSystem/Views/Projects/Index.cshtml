@@ -1,0 +1,48 @@
+﻿@model IEnumerable<TaskManagementSystem.Models.Project>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Проекты</h2>
+
+<p>
+    @Html.ActionLink("Добавить", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ProjectName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TeamLead)
+        </th>
+@if (User.IsInRole("Admin"))
+{
+        <th></th>
+}
+    </tr>
+
+@if (Model != null)
+{
+foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @Html.ActionLink(item.ProjectName, "Details", new { id = item.ID })
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TeamLead.UserName)
+        </td>
+        @if (User.IsInRole("Admin"))
+        {
+        <td>
+            @Html.ActionLink("Изменить", "Edit", new { id = item.ID }, new { @class = "btn btn-primary btn-sm glyphicon glyphicon-edit" }) |
+            @Html.ActionLink("Удалить", "Delete", new { id = item.ID }, new { @class = "btn btn-danger btn-sm glyphicon glyphicon-remove" })
+        </td>
+        }
+    </tr>
+}
+}
+
+</table>

@@ -1,0 +1,245 @@
+﻿
+@model TaskManagementSystem.Models.Task
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>@Html.DisplayFor(model => model.Title)</h2>
+@Html.ActionLink("Создать подзадачу","Create","Tasks", new { id = Model.ID }, new { @class = "btn btn-info btn-sm glyphicon glyphicon-add" })
+<div>
+    <h4>@Html.DisplayFor(model => model.Description)</h4>
+    <hr />
+    @if (Model.TaskStatus.Status == Shared.StatusConstants.CLOSED ||
+                    Model.TaskStatus.Status == Shared.StatusConstants.VERIFY_CLOSED
+                    || (Model.UserCreate.UserName == User.Identity.Name && Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY))
+    {
+       <h4> <b>Результат:</b> @Html.DisplayFor(model => model.Result.ResultText) </h4>    
+        <hr/>
+    }
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.AssignedUser)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AssignedUser.UserName)
+
+            @if(Model.UserCreate.UserName == User.Identity.Name &&
+                (Model.TaskStatus.Status == Shared.StatusConstants.NEED_INPUT ||
+                Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY ||
+                Model.TaskStatus.Status == Shared.StatusConstants.OPEN))
+            {
+                @Ajax.ActionLink("Назначить пользователя", "AssignUserPopUp","Tasks",
+               new { taskId = Model.ID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "result",
+                   InsertionMode = InsertionMode.Replace, OnSuccess = "openPopup" },
+               new { @class = "btn btn-default btn-sm	glyphicon glyphicon-remove-sign" , @id ="assignUser"})
+            <br />
+                <div id="result" style="display:none;"></div>
+            }
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Project.ProjectName)
+        </dt>
+
+        <dd>
+            @Html.ActionLink(Model.Project.ProjectName, "Details","Projects",new { id = Model.ProjectId },null)
+        </dd>
+        @if (Model.TaskStatus.Status == Shared.StatusConstants.OPEN && Model.AssignedUser.UserName == User.Identity.Name)
+        {
+            <dt></dt>
+            <dd>
+                @Html.ActionLink(
+                linkText: " Начать выполнение",
+                actionName: "AssignToMe",
+                routeValues: new { id = Model.ID },
+                htmlAttributes: new { @class = "btn btn-success btn-sm glyphicon glyphicon-remove" }
+                )
+            </dd>
+        }
+        else if (Model.TaskStatus.Status == Shared.StatusConstants.IN_PROCESS)
+        {
+            <dt></dt>
+            <dd>
+                @Ajax.ActionLink("Задача выполнена", "DonePopUp", "Tasks", new { taskId = Model.ID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "result2", InsertionMode = InsertionMode.Replace, OnSuccess = "openPopup2" }, new { @class = "btn btn-success btn-sm glyphicon glyphicon-ok" })<br />
+                <div id="result2" style="display:none;"></div>
+            </dd>
+
+            <dt></dt>
+                        <dd>
+                            @Html.ActionLink(
+                linkText: "Нужна дополнительная информация",
+                actionName: "NeedInput",
+                routeValues: new { id = Model.ID },
+                htmlAttributes: new { @class = "btn btn-warning btn-sm glyphicon glyphicon-info-sign" }
+                                )
+                        </dd>
+                        <dt></dt>
+                                <dd>
+                                    @Html.ActionLink(
+                linkText: "Не могу сделать",
+                actionName: "CantDone",
+                routeValues: new { id = Model.ID },
+                htmlAttributes: new { @class = "btn btn-warning btn-sm glyphicon glyphicon-remove" }
+                                )
+                                </dd>
+        }
+        <dt>
+            @Html.DisplayNameFor(model => model.TaskPriority.Priority)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TaskPriority.Priority)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TaskStatus.Status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TaskStatus.Status)
+            @if (Model.UserCreate.UserName == User.Identity.Name && Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY)
+            {
+                @Html.ActionLink("Проверена", "Verified", "Tasks", new { id = Model.ID }, new { @class="btn btn-success btn-sm glyphicon glyphicon-thumbs-up" })<br />
+            }
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserCreate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserCreate.UserName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DateStart)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DateStart)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastUpdate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastUpdate)
+        </dd>
+        @if (Model.ParentTask != null)
+        {
+        <dt>
+            @Html.DisplayNameFor(model => model.ParentTask)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ParentTask.Title)
+        </dd>
+        }
+        <hr />
+        @if (Model.Attachments != null && Model.Attachments.Count > 0)
+        {
+            <dt>
+                @Html.DisplayNameFor(a => a.Attachments);
+            </dt>
+            <dd>
+                @foreach (var a in Model.Attachments)
+                {
+                @Html.ActionLink(a.FileName,"Download",new { attachId = a.ID })
+                if(a.User.UserName.Equals(User.Identity.Name) || User.IsInRole("Admin"))
+                        {
+                            @Html.ActionLink("Удалить", "DeleteAttachment", new { id = a.ID }, new { @class = "btn btn-warning" })
+                        }
+                    <br/>
+                }
+            </dd>
+        }
+    </dl>
+    @using (Html.BeginForm("AddAttachments", "Tasks", FormMethod.Post, new { enctype = "multipart/form-data" }))
+     {
+                <input type="file" name="FileUpload1" />
+                <input type="submit" value="Добавить файлы" />
+                <input type="hidden" name="id" value="@Model.ID" />
+
+    }
+    <hr/>
+    <div id="divComments" class="chatbox container">
+        <h3>Комментарии: </h3>
+        <hr />
+        <div class="chat_inner" >
+
+        </div>
+    </div>
+           @using (Ajax.BeginForm("AddComment", new AjaxOptions
+           {
+               Url = Url.Action("AddCommentAjax"),
+               HttpMethod = "POST",
+               OnSuccess = "AfterAddComment"
+           }))
+           {
+             <input name="taskId" type="hidden" value="@Model.ID" />
+            @Html.TextArea("comment")
+            <input type="submit" value="Добавить комментарий" />
+           }
+</div>
+<p>
+@if (Model.UserCreate.UserName == User.Identity.Name || User.IsInRole("Admin"))
+{
+    @Html.ActionLink("Изменить", "Edit", new { id = Model.ID }, new { @class = "btn btn-primary btn-sm glyphicon glyphicon-edit" })
+}
+    @Html.ActionLink("Назад к списку", "Index")
+</p>
+
+
+
+@section scripts
+{
+    <script type="text/javascript">
+   
+        function AfterAddComment()
+        {
+            $("#comment").val("");
+            GetComments()
+        }
+        function GetComments()
+        {
+            $.getJSON('@Url.Action("GetComments", new { id = Model.ID })', function (data) {
+                var items = [];
+                for (var i = 0; i < data.Data.length; i++) {
+                    console.log(data.Data[i].Key);
+                    items.push("<div class='clearfix " + (("@User.Identity.Name" == data.Data[i].Key) ? "chat_out" : "chat_in") + "'>" +
+                    "<span class='message'>" +
+                        data.Data[i].Value + "</span><span class='author'>"
+                        + data.Data[i].Key + "</span>" +
+                        '</div>');
+                }
+                $("#divComments").html(items.join(' '))
+            });
+        }
+        setInterval(GetComments(), 1000);
+
+        $(document).ready(function () {
+            if ($("#result")) {
+                $("#result").dialog({
+                    autoOpen: false,
+                    width: 500,
+                    height: 'auto',
+                    modal: true
+                });
+            }
+            if ($("#resul2")) {
+                $("#result2").dialog({
+                    autoOpen: false,
+                    width: 500,
+                    height: 'auto',
+                    modal: true
+                });
+            }
+        });
+        function openPopup() {
+            $("#result").dialog("open");
+        }
+        function openPopup2() {
+            $("#result2").dialog("open");
+        }
+    </script>
+}
