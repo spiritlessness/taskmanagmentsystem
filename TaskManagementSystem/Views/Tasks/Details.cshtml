@@ -3,6 +3,12 @@
 
 @{
     ViewBag.Title = "Details";
+    bool isUser = ViewBag.isUser;
+    string userName = User.Identity.Name;
+    string groupName = ViewBag.GroupName;
+    List<TaskManagementSystem.Models.Task> childs = ViewBag.childs;
+    bool isChilds = (childs != null && childs.Count > 0);
+    bool isChildsClosed = ViewBag.isChildsClosed;
 }
 
 <h2>@Html.DisplayFor(model => model.Title)</h2>
@@ -14,17 +20,24 @@
                     Model.TaskStatus.Status == Shared.StatusConstants.VERIFY_CLOSED
                     || (Model.UserCreate.UserName == User.Identity.Name && Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY))
     {
-       <h4> <b>Результат:</b> @Html.DisplayFor(model => model.Result.ResultText) </h4>    
+       <h4> <b>Результат:</b> @Html.DisplayFor(model => model.Result.ResultText) </h4> 
+          if (Model.Result.Attachment != null)
+          {
+            @Html.ActionLink(Model.Result.Attachment.FileName, "Download", new { attachId = Model.Result.Attachment.ID })
+          }
         <hr/>
     }
     <dl class="dl-horizontal">
+
         <dt>
-            @Html.DisplayNameFor(model => model.AssignedUser)
+            @(String.IsNullOrEmpty(groupName)?Html.DisplayNameFor(model => model.AssignedUser):Html.DisplayNameFor(model => model.Group))
+            
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.AssignedUser.UserName)
+            @(String.IsNullOrEmpty(groupName) ? Html.DisplayFor(model => model.AssignedUser.UserName) : Html.ActionLink(Model.Group.Name, "Details", "Groups", new { id = Model.GroupId }, null))
+            
 
-            @if(Model.UserCreate.UserName == User.Identity.Name &&
+            @if(isUser &&
                 (Model.TaskStatus.Status == Shared.StatusConstants.NEED_INPUT ||
                 Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY ||
                 Model.TaskStatus.Status == Shared.StatusConstants.OPEN))
@@ -44,7 +57,7 @@
         <dd>
             @Html.ActionLink(Model.Project.ProjectName, "Details","Projects",new { id = Model.ProjectId },null)
         </dd>
-        @if (Model.TaskStatus.Status == Shared.StatusConstants.OPEN && Model.AssignedUser.UserName == User.Identity.Name)
+        @if (Model.TaskStatus.Status == Shared.StatusConstants.OPEN && isUser)
         {
             <dt></dt>
             <dd>
@@ -56,14 +69,16 @@
                 )
             </dd>
         }
-        else if (Model.TaskStatus.Status == Shared.StatusConstants.IN_PROCESS)
+        else if (Model.TaskStatus.Status == Shared.StatusConstants.IN_PROCESS )
         {
+            if (isChildsClosed)
+            {
             <dt></dt>
             <dd>
                 @Ajax.ActionLink("Задача выполнена", "DonePopUp", "Tasks", new { taskId = Model.ID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "result2", InsertionMode = InsertionMode.Replace, OnSuccess = "openPopup2" }, new { @class = "btn btn-success btn-sm glyphicon glyphicon-ok" })<br />
                 <div id="result2" style="display:none;"></div>
             </dd>
-
+            }
             <dt></dt>
                         <dd>
                             @Html.ActionLink(
@@ -73,15 +88,6 @@
                 htmlAttributes: new { @class = "btn btn-warning btn-sm glyphicon glyphicon-info-sign" }
                                 )
                         </dd>
-                        <dt></dt>
-                                <dd>
-                                    @Html.ActionLink(
-                linkText: "Не могу сделать",
-                actionName: "CantDone",
-                routeValues: new { id = Model.ID },
-                htmlAttributes: new { @class = "btn btn-warning btn-sm glyphicon glyphicon-remove" }
-                                )
-                                </dd>
         }
         <dt>
             @Html.DisplayNameFor(model => model.TaskPriority.Priority)
@@ -97,7 +103,7 @@
 
         <dd>
             @Html.DisplayFor(model => model.TaskStatus.Status)
-            @if (Model.UserCreate.UserName == User.Identity.Name && Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY)
+            @if (isUser && Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY)
             {
                 @Html.ActionLink("Проверена", "Verified", "Tasks", new { id = Model.ID }, new { @class="btn btn-success btn-sm glyphicon glyphicon-thumbs-up" })<br />
             }
@@ -132,8 +138,21 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.ParentTask.Title)
+            @Html.ActionLink(Model.ParentTask.Title, "Details", new { id = Model.ParentTaskId })
+            
         </dd>
+        }
+        @if(isChilds)
+        {
+            <dt> Подзадачи:</dt>
+            <dd>
+                <ul>
+                    @foreach (var a in childs)
+                    {
+                        <li> @Html.ActionLink(a.Title, "Details", new { id = a.ID }) : @a.TaskStatus.Status</li>
+                    }
+                </ul>
+            </dd>
         }
         <hr />
         @if (Model.Attachments != null && Model.Attachments.Count > 0)

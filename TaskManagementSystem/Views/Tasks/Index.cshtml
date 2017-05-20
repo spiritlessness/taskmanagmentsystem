@@ -14,7 +14,15 @@
 </p>
 @Html.Partial("ShowListTasks", Model)
 
-
+@Html.ActionLink("Перейти к завершенным задачам", "History")
 @section scripts {
-
+<script type="text/javascript">
+    var monkeyList = new List('tasks-notes', {
+        valueNames: [ 'title', 'description','priority','time','type'],
+        page: 5,
+        pagination: true
+    }
+        );
+</script>
 }
+  

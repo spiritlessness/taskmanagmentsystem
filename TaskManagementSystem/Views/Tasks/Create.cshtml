@@ -52,7 +52,7 @@
             @Html.LabelFor(model => model.ParentTask, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @parentTask.Title
-                @Html.Hidden("ParentTaskId", parentTask.ID)
+                <input id="ParentTaskId" type="hidden" name="ParentTaskId" value="@parentTask.ID" />
             </div>
         </div>
         }
@@ -108,13 +108,27 @@
             </div>
         </div>
        }
+        @if (parentTask != null)
+        {
         <div class="form-group">
-            @Html.LabelFor(model => model.ProjectId, "ProjectId", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Project, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("ProjectId", null, htmlAttributes: new { @class = "form-control" })
+                <p> @parentTask.Project.ProjectName</p>
+                <input id="ProjectId" type="hidden" name="ProjectId" value="@parentTask.Project.ID" />
                 @Html.ValidationMessageFor(model => model.ProjectId, "", new { @class = "text-danger" })
             </div>
         </div>
+        }
+        else
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Project, "ProjectId", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownList("ProjectId", null, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ProjectId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
         @if (!isTemplate)
         {
         @Html.Partial("CreateAttachment")

@@ -22,12 +22,18 @@ namespace TaskManagementSystem.Controllers
         // GET: Tasks
         public ActionResult Index()
         {
-            var tasks = db.Tasks.Include(t => t.Project).Include(t => t.Result).Include(t => t.TaskPriority).Include(t => t.TaskStatus).Include(t => t.UserCreate).Include(t => t.TaskType).Where(t => t.isTemplate == false);
+            var tasks = db.Tasks.Include(t => t.Project).Include(t => t.Result).Include(t => t.TaskPriority).Include(t => t.TaskStatus).Include(t => t.UserCreate).Include(t => t.TaskType).Where(t => t.isTemplate == false).Where(t => t.TaskStatus.Status != Shared.StatusConstants.CLOSED && t.TaskStatus.Status != Shared.StatusConstants.VERIFY_CLOSED);
+            return View(tasks.ToList());
+        }
+
+        public ActionResult History()
+        {
+            var tasks = db.Tasks.Include(t => t.Project).Include(t => t.Result).Include(t => t.TaskPriority).Include(t => t.TaskStatus).Include(t => t.UserCreate).Include(t => t.TaskType).Where(t => t.isTemplate == false).Where(t => t.TaskStatus.Status == Shared.StatusConstants.CLOSED && t.TaskStatus.Status == Shared.StatusConstants.VERIFY_CLOSED);
             return View(tasks.ToList());
         }
 
         // GET: Tasks/Details/5
-        public ActionResult Details(int? id)
+        public async System.Threading.Tasks.Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -38,7 +44,45 @@ namespace TaskManagementSystem.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.groupName = (task.Group == null) ? String.Empty : task.Group.Name;
+            ViewBag.isUser = await IsUserAssignedToTask(task);
+            var childs = await db.Tasks.Where(pt => pt.ParentTaskId == task.ID).ToListAsync();
+            bool isChildClosed = false;
+            if (childs == null)
+                isChildClosed = true;
+            else if (childs.Count == 0)
+                isChildClosed = true;
+            else
+            {
+                foreach (var c in childs)
+                {
+                    if (c.TaskStatus.Status == Shared.StatusConstants.CLOSED || c.TaskStatus.Status == Shared.StatusConstants.VERIFY_CLOSED)
+                        isChildClosed = true;
+                }
+            }
+            ViewBag.childs = childs;
+            ViewBag.isChildsClosed = isChildClosed;
             return View(task);
+        }
+
+        private async System.Threading.Tasks.Task<bool> IsUserAssignedToTask(Task task)
+        {
+            if (task.AssignedUser == null)
+                if (task.Group == null)
+                    return false;
+                else
+                {
+                    var user = await db.Users.FirstOrDefaultAsync(u => u.UserName.Equals(User.Identity.Name));
+                    if (task.Group.Users.Contains(user)) return true;
+                }
+            else
+            {
+                if (task.AssignedUser.UserName == User.Identity.Name)
+                    return true;
+            }
+
+            return false;
+            
         }
 
         // GET: Tasks/Create
@@ -87,9 +131,11 @@ namespace TaskManagementSystem.Controllers
                 ModelState.AddModelError("", "Выберите или пользователя или группу");
             if (ModelState.IsValid)
             {
-                if(task.ParentTaskId != null)
+                if(fc["ParentTaskId"] != null)
                 {
-                    task.ParentTask = db.Tasks.First(t => t.ID == task.ParentTaskId);
+                    var parentTaskID = Int32.Parse(fc["ParentTaskId"]);
+                    task.ParentTask = db.Tasks.First(t => t.ID == parentTaskID );
+                    task.ParentTaskId = parentTaskID;
                 }
                 if (!task.isTemplate)
                 {
@@ -115,7 +161,7 @@ namespace TaskManagementSystem.Controllers
                 {
                     task.AssignedUser = null;
                     task.AssignedUserId = null;
-                    task.Group = db.Groups.Find(groupId);
+                    task.Group = db.Groups.Find(Int32.Parse(groupId));
                     db.Tasks.Add(task);
                     db.SaveChanges();
                     AddAttachment(task.ID);
@@ -128,6 +174,7 @@ namespace TaskManagementSystem.Controllers
                 }
                 return RedirectToAction("Index");
             }
+            ViewBag.ParentTask = task.ParentTask;
             ViewBag.isTemplate = task.isTemplate;
             ViewBag.TaskTypeId = new SelectList(db.TaskTypes, "ID", "Type", task.TaskTypeId);
             ViewBag.ProjectId = new SelectList(db.Projects, "ID", "ProjectName", task.ProjectId);

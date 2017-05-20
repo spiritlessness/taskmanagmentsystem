@@ -47,12 +47,14 @@ namespace TaskManagementSystem
                       "~/Content/jquery.datetimepicker.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/toastr").Include(
-"~/Scripts/toastr.min.js"));
+                       "~/Scripts/toastr.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/toastr").Include(
                       "~/Content/toastr.min.css"));
 
-
+            bundles.Add(new ScriptBundle("~/bundles/list").Include(
+                      "~/Scripts/list.min.js",
+                      "~/Scripts/list.pagination.min.js"));
         }
     }
 }

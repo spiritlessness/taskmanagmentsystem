@@ -56,8 +56,9 @@ namespace TaskManagementSystem.Models
         [Display(Name = "Комментарии")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Comment> Comments { get; set; }
-
+        [Display(Name = "Назначена группе")]
         public virtual Group Group { get; set; }
+        [Display(Name = "Проект")]
         public virtual Project Project { get; set; }
         public virtual TaskType TaskType { get; set; }
         public virtual TaskPriority TaskPriority { get; set; }

@@ -8,10 +8,10 @@ namespace Shared
 {
     public static class PriorityConstants
     {
-        public static string VERY_HIGH = "Критический";
-        public static string HIGH = "Высокий";
-        public static string NORMAL = "Нормальный";
-        public static string LOW = "Низкий";
-        public static string VERY_LOW = "Очень низкий";
+        public const string VERY_HIGH = "Критический";
+        public const string HIGH = "Высокий";
+        public const string NORMAL = "Нормальный";
+        public const string LOW = "Низкий";
+        public const string VERY_LOW = "Очень низкий";
     }
 }

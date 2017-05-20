@@ -116,18 +116,19 @@ span {
     background-position: center center;
     background-attachment: fixed;
     background-size: cover;
+    overflow:hidden;
+   
 }
 .ul-tasks-notes,.li-tasks-notes{
   list-style:none;
 }
 .ul-tasks-notes{
-  overflow:hidden;
+  
   padding:3em;
 }
 .ul-tasks-notes .li-tasks-notes a{
   text-decoration:none;
   color:#000;
-  background:#ffc;
   display:block;
   height:10em;
   width:10em;
@@ -156,6 +157,8 @@ span {
   -webkit-transform: rotate(-6deg);
   -o-transform: rotate(-6deg);
   -moz-transform:rotate(-6deg);
+   overflow: hidden;
+   text-overflow: ellipsis;
 }
 .ul-tasks-notes .li-tasks-notes:nth-child(even) a{
   -o-transform:rotate(4deg);
@@ -163,7 +166,6 @@ span {
   -moz-transform:rotate(4deg);
   position:relative;
   top:5px;
-  background:#cfc;
 }
 .ul-tasks-notes .li-tasks-notes:nth-child(3n) a{
   -o-transform:rotate(-3deg);
@@ -171,7 +173,6 @@ span {
   -moz-transform:rotate(-3deg);
   position:relative;
   top:-5px;
-  background:#ccf;
 }
 .ul-tasks-notes .li-tasks-notes:nth-child(5n) a{
   -o-transform:rotate(5deg);
@@ -189,4 +190,5 @@ span {
   -o-transform: scale(1.25);
   position:relative;
   z-index:5;
+  overflow: visible;
 }

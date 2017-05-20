@@ -1,0 +1,22 @@
+﻿@model IEnumerable<TaskManagementSystem.Models.Task>
+
+@{
+    ViewBag.Title = "Index";
+}
+<div><span id="notification" style="color:red;font-size:15px;"></span></div>
+
+<h2>Завершенные задачи</h2>
+
+@Html.Partial("ShowListTasks", Model)
+
+
+@section scripts {
+    <script type="text/javascript">
+    var monkeyList = new List('tasks-notes', {
+        valueNames: [ 'title', 'description','priority','time','type'],
+        page: 5,
+        pagination: true
+    }
+        );
+    </script>
+}
