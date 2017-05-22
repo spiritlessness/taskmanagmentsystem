@@ -12,12 +12,11 @@ namespace TaskManagementSystem.Models
     {
         [Display(Name = "Название проекта")]
         [Required(AllowEmptyStrings =false,ErrorMessage ="Имя проекта обязательно")]
+        [MaxLength(30,ErrorMessage = "Слишком длинное название")]
         public string ProjectName { get; set; }
         [ForeignKey("TeamLead")]
         public string TeamLeadId { get; set; }
 
-        [MaxLength(3,ErrorMessage = "Не более 3 символов")]
-        public string ShortName { get; set; }
         [Display(Name = "Руководитель")]
         public virtual ApplicationUser TeamLead { get; set; }
         [Display(Name = "Задачи")]

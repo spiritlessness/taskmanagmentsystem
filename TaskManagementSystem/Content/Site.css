@@ -8,8 +8,15 @@
     padding-left: 15px;
     padding-right: 15px;
     color:black;
+    background-color:#556c83;
 }
 
+a {
+    color: #0dffe9;
+}
+a:hover{
+    color: #d6ff01;
+}
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
 */
@@ -24,7 +31,8 @@ textarea {
     max-width: 280px;
 }
 
-*{box-sizing:border-box;
+*{
+box-sizing:border-box;
 margin:0;
 padding: 0;
 }
@@ -144,21 +152,20 @@ span {
   margin:1em;
   float:left;
 }
-.ul-tasks-notes .li-tasks-notes h2{
+.ul-tasks-notes .li-tasks-notes h4{
   font-size:140%;
   font-weight:bold;
   padding-bottom:10px;
 }
 .ul-tasks-notes .li-tasks-notes p{
-  font-family:"StudioScriptC",arial,sans-serif;
-  font-size:180%;
+  overflow: hidden;
 }
 .ul-tasks-notes .li-tasks-notes a{
   -webkit-transform: rotate(-6deg);
   -o-transform: rotate(-6deg);
   -moz-transform:rotate(-6deg);
    overflow: hidden;
-   text-overflow: ellipsis;
+
 }
 .ul-tasks-notes .li-tasks-notes:nth-child(even) a{
   -o-transform:rotate(4deg);

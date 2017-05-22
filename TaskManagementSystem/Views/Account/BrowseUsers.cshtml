@@ -4,18 +4,24 @@
     ViewBag.Title = "Пользователи";
 }
 
-<h2>BrowseUsers</h2>
+<h2>Пользователи</h2>
 
 <table class="table">
     <tr>
         <th>
-            UserName
+            Пользователь
         </th>
         <th>
-            Roles
+            Роль
         </th>
         <th>
             
+        </th>
+        <th>
+
+        </th>
+        <th>
+
         </th>
     </tr>
     @foreach(var user in Model.Users)
@@ -27,7 +33,7 @@
             <td>
                @foreach(string a in @user.Value)
                {
-                       @a
+                       @a <br />
                }
             </td>
 @if (Context.User.Identity.Name != @user.Key.UserName)

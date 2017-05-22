@@ -5,38 +5,51 @@
     var assignedTasks = (List<TaskManagementSystem.Models.Task>)ViewBag.assignedTasks;
     var overdueTasks = (List<TaskManagementSystem.Models.Task>)ViewBag.overdueTaks;
     var soonEndTasks = (List<TaskManagementSystem.Models.Task>)ViewBag.soonEndTasks;
+    var myCreatedTasks = (List<TaskManagementSystem.Models.Task>)ViewBag.myCreatedTasks;
 }
 
-<h2>Index</h2>
+<h2>Доска</h2>
 
 @if (assignedTasks != null && assignedTasks.Count != 0)
 {
-    <p>
-     Ваши задачи:
-    </p>
-    @Html.Partial("ShowListTasks", assignedTasks)
-
-    if (overdueTasks != null && overdueTasks.Count != 0)
-    {
+    <div>
         <p>
-            Невыполненные задачи во время:
+            Ваши задачи:
         </p>
-        @Html.Partial("ShowListTasks", overdueTasks)
-    }
-
-    if (soonEndTasks != null && soonEndTasks.Count != 0)
-    {
-        <p>
-            Заканчиваются через 1 день:
-        </p>
-        @Html.Partial("ShowListTasks", soonEndTasks)
-    }
+        <div id="tasks-notes" class="tasks-notes">
+            <input type="text" class="search" />
+            <button class="sort" data-sort="title">
+                Сортировать по названию
+            </button>
+            <button class="sort" data-sort="priority">
+                Сортировать по приоритету
+            </button>
+            <button class="sort" data-sort="time">
+                Сортировать по времени
+            </button>
+            <button class="sort" data-sort="type">
+                Сортировать по типу
+            </button>
+            @Html.Partial("ShowListTasks", assignedTasks)
+        </div>
+        </div>
 }
 else
 {
     <p>В данный момент у вас нет задач</p>
 }
 
+@if (myCreatedTasks != null && myCreatedTasks.Count != 0)
+{
+    
+        <p>
+            Созданные вами задачи:
+        </p>
+        <div class="tasks-notes">
+            @Html.Partial("ShowListTasks", myCreatedTasks)
+
+        </div>
+}
 
             
             

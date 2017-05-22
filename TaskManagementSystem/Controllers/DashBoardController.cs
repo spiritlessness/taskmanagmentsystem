@@ -21,6 +21,7 @@ namespace TaskManagementSystem.Controllers
             var myTasks = await db.Tasks.Where(t => t.AssignedUserId == user.Id).Where(t => t.isTemplate == false).ToListAsync();
             var allGroups = await db.Groups.ToListAsync();
             var myGroups = new List<Group>();
+            var myCreatedTasks = await db.Tasks.Where(u => u.ResponsibleUserId == user.Id).ToListAsync();
             foreach(var gr in allGroups)
             {
                 if (gr.Users.Contains(user)) myGroups.Add(gr);
@@ -29,7 +30,7 @@ namespace TaskManagementSystem.Controllers
             ViewBag.assignedTasks = myTasks;
             ViewBag.overdueTaks = myTasks.Where(t => t.ScheduledTime < DateTime.Now).ToList();
             ViewBag.soonEndTasks = db.Tasks.Where(t => t.AssignedUserId == user.Id).Where(t => t.isTemplate == false).Where(t => DbFunctions.DiffDays(t.ScheduledTime.Value,DateTime.Now) > 1).ToList();
-
+            ViewBag.myCreatedTasks = myCreatedTasks;
             return View();
         }
 

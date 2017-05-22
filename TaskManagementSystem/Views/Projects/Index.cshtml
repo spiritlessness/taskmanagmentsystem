@@ -6,9 +6,12 @@
 
 <h2>Проекты</h2>
 
+@if (User.IsInRole("Admin"))
+{
 <p>
-    @Html.ActionLink("Добавить", "Create")
+    @Html.ActionLink("Добавить", "Create",null,new { @class = "btn btn-primary btn-sm" })
 </p>
+}
 <table class="table">
     <tr>
         <th>

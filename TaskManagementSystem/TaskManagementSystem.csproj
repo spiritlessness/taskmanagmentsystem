@@ -180,7 +180,6 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\GroupsController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
     <Compile Include="Controllers\TasksController.cs" />
@@ -198,6 +197,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helper.cs" />
     <Compile Include="Migrations\201705131924478_a.cs" />
     <Compile Include="Migrations\201705131924478_a.Designer.cs">
       <DependentUpon>201705131924478_a.cs</DependentUpon>
@@ -213,6 +213,10 @@
     <Compile Include="Migrations\201705172110356_aaa.cs" />
     <Compile Include="Migrations\201705172110356_aaa.Designer.cs">
       <DependentUpon>201705172110356_aaa.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705211644187_adducforgroup.cs" />
+    <Compile Include="Migrations\201705211644187_adducforgroup.Designer.cs">
+      <DependentUpon>201705211644187_adducforgroup.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -436,6 +440,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Images\bkg_banner.jpg" />
+    <Content Include="Images\gvozd.png" />
     <Content Include="Scripts\bootstrap-multiselect.js" />
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
@@ -571,8 +576,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
     <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
@@ -643,6 +646,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705172110356_aaa.resx">
       <DependentUpon>201705172110356_aaa.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705211644187_adducforgroup.resx">
+      <DependentUpon>201705211644187_adducforgroup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

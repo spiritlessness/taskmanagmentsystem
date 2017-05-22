@@ -12,17 +12,41 @@
     @Html.ActionLink("Добавить по шаблону", "Create", new { fromTemplate = true })
     @Html.ActionLink("Добавить шаблон", "Create", new { template = true })
 </p>
-@Html.Partial("ShowListTasks", Model)
+<div id="tasks-notes" class="tasks-notes">
+    <input type="text" class="search" />
+    <select class="sort">
+        <option  value="title">
+            Сортировать по названию
+        </option>
+        <option value="priority">
+            Сортировать по приоритету
+        </option>
+        <option value="time">
+            Сортировать по времени
+        </option>
+        <option value="type">
+            Сортировать по типу
+        </option>
+    </select>
+    @Html.Partial("ShowListTasks", Model)
+    </div>
+    @Html.ActionLink("Перейти к завершенным задачам", "History")
+    @section scripts {
+        <script type="text/javascript">
+            var list = new List('tasks-notes', {
+                valueNames: ['title', 'description', 'priority', 'time', 'type'],
+                page: 10,
+                pagination: true
+            }
+                );
 
-@Html.ActionLink("Перейти к завершенным задачам", "History")
-@section scripts {
-<script type="text/javascript">
-    var monkeyList = new List('tasks-notes', {
-        valueNames: [ 'title', 'description','priority','time','type'],
-        page: 5,
-        pagination: true
+            $('select.sort').change(function () {
+                var selection = $(this).val();
+                list.sort(selection);
+            });
+
+            $('button.sort').click(function () {
+                list.sort($(this).data('sort'));
+            });
+        </script>
     }
-        );
-</script>
-}
-  

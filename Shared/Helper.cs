@@ -34,5 +34,16 @@ namespace Shared
             }
             return color;
         }
+
+        public static string GetBorderByStatus(string status)
+        {
+            string result = String.Empty;
+
+            if (status.Equals(StatusConstants.NEED_VERIFY))
+                result = "10px solid yellow";
+            return result;
+        }
+
+       
     }
 }

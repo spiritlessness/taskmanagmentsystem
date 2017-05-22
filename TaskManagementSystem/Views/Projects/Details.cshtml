@@ -4,10 +4,15 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h2>
+    @Html.DisplayFor(model => model.ProjectName)
+</h2>
 
 <div>
-    <h4>Project</h4>
+    @if (User.IsInRole("Admin") || Model.TeamLead.UserName.Equals(User.Identity.Name))
+    {
+    @Html.ActionLink("Добавить Задачу", "Create", "Tasks", new { projectId = Model.ID }, null)
+    }
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -18,13 +23,6 @@
             @Html.DisplayFor(model => model.TeamLead.UserName)
         </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ProjectName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ProjectName)
-        </dd>
         <dt> @Html.DisplayNameFor(model => model.Tasks)</dt>
  
     @if ((ViewBag.Tasks as List<TaskManagementSystem.Models.Task>).Count != 0)
@@ -42,17 +40,27 @@
                     <th>
                         @Html.DisplayNameFor(model => model.Tasks.FirstOrDefault().TaskPriority.Priority)
                     </th>
+                    <th>
+
+                    </th>
                 </thead>
 
                 <tbody>
                     @foreach (var task in ViewBag.Tasks as IEnumerable<TaskManagementSystem.Models.Task>)
                     {
-                        <tr>
+                        <tr id="@task.ID">
                             <td> @Html.ActionLink(task.Title, "Details", "Tasks", new { id = task.ID },null)  </td>
                             <td> @task.TaskStatus.Status </td>
                             <td> @task.TaskPriority.Priority </td>
+                            @if (User.IsInRole("Admin") || Model.TeamLead.UserName.Equals(User.Identity.Name))
+                            {
+                                <td>
+                                    @Ajax.ActionLink("Удалить", "Delete", "Tasks", new { id = task.ID }, new AjaxOptions{ HttpMethod = "GET", OnSuccess = "remove(" + task.ID + ")"}, new { @class = "btn btn-danger" })
+                                </td>
+                            }
+                           
                         </tr>
-                    };
+                    }
                 </tbody>
             </table>
           </dd>
@@ -64,6 +72,19 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Изменить", "Edit", new { id = Model.ID }, new { @class = "btn btn-primary btn-sm glyphicon glyphicon-edit" }) |
-    @Html.ActionLink("Назад к списку", "Index")
+    @if (User.IsInRole("Admin") || Model.TeamLead.UserName.Equals(User.Identity.Name))
+    {
+    @Html.ActionLink("Изменить", "Edit", new { id = Model.ID }, new { @class = "btn btn-primary btn-sm glyphicon glyphicon-edit" })
+    }
+    @Html.ActionLink("Назад к списку", "Index", null, new { @class = "btn btn-default btn-sm" })
 </p>
+
+
+@section Scripts{
+    <script>
+    function remove(id)
+    {
+        $('#' + id).remove();
+    }
+</script>
+    }

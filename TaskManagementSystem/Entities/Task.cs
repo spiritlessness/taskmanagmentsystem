@@ -28,8 +28,8 @@ namespace TaskManagementSystem.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         [DataType(DataType.DateTime)]
         public DateTime? ScheduledTime { get; set; }
-        [ForeignKey("UserCreate")]
-        public string UserCreateId { get; set; }
+        [ForeignKey("ResponsibleUser")]
+        public string ResponsibleUserId { get; set; }
         [ForeignKey("AssignedUser")]
         public string AssignedUserId { get; set; }
         [ForeignKey("TaskStatus")]
@@ -63,8 +63,8 @@ namespace TaskManagementSystem.Models
         public virtual TaskType TaskType { get; set; }
         public virtual TaskPriority TaskPriority { get; set; }
         public virtual TaskStatus TaskStatus { get; set; }
-        [Display(Name = "Создана пользователем")]
-        public virtual ApplicationUser UserCreate { get; set; }
+        [Display(Name = "Ответственный пользователь")]
+        public virtual ApplicationUser ResponsibleUser { get; set; }
         [Display(Name = "Назначена пользователю")]
         public virtual ApplicationUser AssignedUser { get; set; }
         public virtual Result Result { get; set; }

@@ -30,9 +30,7 @@ namespace TaskManagementSystem
             {
                 var role = new IdentityRole();
                 role.Name = "Admin";
-                roleManager.Create(role);
-
-                //Here we create a Admin super user who will maintain the website                 
+                roleManager.Create(role);            
 
                 var user = new ApplicationUser();
                 user.UserName = "admin";
@@ -46,7 +44,6 @@ namespace TaskManagementSystem
                 }
             }
 
-            // creating Creating Manager role  
             if (!roleManager.RoleExists("User"))
             {
                 var role = new IdentityRole();
@@ -82,7 +79,28 @@ namespace TaskManagementSystem
                 roleManager.Create(role);
 
             }
+            if (!roleManager.RoleExists("Cтарший преподаватель"))
+            {
+                var role = new IdentityRole();
+                role.Name = "Cтарший преподаватель";
+                roleManager.Create(role);
 
+            }
+            if (!roleManager.RoleExists("Доцент"))
+            {
+                var role = new IdentityRole();
+                role.Name = "Доцент";
+                roleManager.Create(role);
+
+            }
+            if (!roleManager.RoleExists("Профессор"))
+            {
+                var role = new IdentityRole();
+                role.Name = "Профессор";
+                roleManager.Create(role);
+
+            }
+            
             context.SaveChanges();
         }
     }

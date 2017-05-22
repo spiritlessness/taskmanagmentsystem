@@ -4,7 +4,7 @@
     ViewBag.Title = "Delete";
 }
 
-<h2>Are you sure you want to delete this?</h2>
+<h2>Вы действительно хотите удалить проект?</h2>
 <div>
     <hr />
     <dl class="dl-horizontal">
@@ -30,8 +30,8 @@
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Назад к списку", "Index")
+            <input type="submit" value="Удалить" class="btn btn-danger" /> |
+            @Html.ActionLink("Назад к списку", "Index", null, new { @class="btn btn-default"})
         </div>
     }
 </div>

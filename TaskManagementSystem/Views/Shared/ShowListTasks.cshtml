@@ -3,35 +3,27 @@
 
 @if (Model != null && Model.Count() != 0)
 {
-    <div id="tasks-notes" class="tasks-notes">
-        <input type="text" class="search" />
-        <button class="sort" data-sort="title">
-            Сортировать по названию
-        </button>
-        <button class="sort" data-sort="priority">
-            Сортировать по приоритету
-        </button>
-        <button class="sort" data-sort="time">
-            Сортировать по времени
-        </button>
-        <button class="sort" data-sort="type">
-            Сортировать по типу
-        </button>
             <ul class="list ul-tasks-notes">
                 @foreach (var item in Model)
                 {
                     <li class="li-tasks-notes" >
-                        <a class="sad" href="@Url.Action("Details","Tasks",new { id = item.ID })" style="background-color:@Helper.GetColorByPriority(item.TaskPriority.Priority)">
-                            <h2 class="title"> @item.Title</h2>
-                            <p class="description"> @item.Description</p>
+                        
+                        <a class="sad" href="@Url.Action("Details","Tasks",new { id = item.ID })" 
+                        style="background-color:@Shared.Helper.GetColorByPriority(item.TaskPriority.Priority);
+                         border: @Shared.Helper.GetBorderByStatus(item.TaskStatus.Status);">
+                            @if (item.ScheduledTime.HasValue && (item.ScheduledTime.Value.Date == DateTime.Now.Date))
+                            {
+                            <b style="color:black;float:right"> !!!</b>
+                            }
+                            <h4 class="title"> @item.Title</h4>
+                            <p class="description"> @item.TaskType.Type</p>
                             <p class="priority" style="display:none">@item.TaskPriorityId</p>
-                            <p class="time" style="display:none">@item.ScheduledTime</p>
+                            <p class="time" style="display:none">@if (item.ScheduledTime.HasValue) {@item.ScheduledTime.Value.ToString("o");}</p>
                             <p class="type" style="display:none">@item.TaskTypeId</p>
                         </a>
                     </li>
                 }
             </ul>
             <ul class="pagination"> </ul>
-</div>
 }
     

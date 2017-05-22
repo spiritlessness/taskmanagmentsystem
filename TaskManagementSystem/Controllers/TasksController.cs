@@ -22,13 +22,13 @@ namespace TaskManagementSystem.Controllers
         // GET: Tasks
         public ActionResult Index()
         {
-            var tasks = db.Tasks.Include(t => t.Project).Include(t => t.Result).Include(t => t.TaskPriority).Include(t => t.TaskStatus).Include(t => t.UserCreate).Include(t => t.TaskType).Where(t => t.isTemplate == false).Where(t => t.TaskStatus.Status != Shared.StatusConstants.CLOSED && t.TaskStatus.Status != Shared.StatusConstants.VERIFY_CLOSED);
+            var tasks = db.Tasks.Include(t => t.Project).Include(t => t.Result).Include(t => t.TaskPriority).Include(t => t.TaskStatus).Include(t => t.ResponsibleUser).Include(t => t.TaskType).Where(t => t.isTemplate == false).Where(t => t.TaskStatus.Status != Shared.StatusConstants.CLOSED && t.TaskStatus.Status != Shared.StatusConstants.VERIFY_CLOSED);
             return View(tasks.ToList());
         }
 
-        public ActionResult History()
+        public async System.Threading.Tasks.Task<ActionResult> History()
         {
-            var tasks = db.Tasks.Include(t => t.Project).Include(t => t.Result).Include(t => t.TaskPriority).Include(t => t.TaskStatus).Include(t => t.UserCreate).Include(t => t.TaskType).Where(t => t.isTemplate == false).Where(t => t.TaskStatus.Status == Shared.StatusConstants.CLOSED && t.TaskStatus.Status == Shared.StatusConstants.VERIFY_CLOSED);
+            var tasks = await db.Tasks.Include(t => t.Project).Include(t => t.Result).Include(t => t.TaskPriority).Include(t => t.TaskStatus).Include(t => t.ResponsibleUser).Include(t => t.TaskType).Where(t => t.isTemplate == false).Where(t => t.TaskStatus.Status == Shared.StatusConstants.CLOSED || t.TaskStatus.Status == Shared.StatusConstants.VERIFY_CLOSED).ToListAsync();
             return View(tasks.ToList());
         }
 
@@ -39,13 +39,15 @@ namespace TaskManagementSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Task task = db.Tasks.Include(u => u.UserCreate).Include(au => au.AssignedUser).FirstOrDefault(t => t.ID == id);
+            Task task = db.Tasks.Include(u => u.ResponsibleUser).Include(au => au.AssignedUser).FirstOrDefault(t => t.ID == id);
             if (task == null)
             {
                 return HttpNotFound();
             }
             ViewBag.groupName = (task.Group == null) ? String.Empty : task.Group.Name;
+            ViewBag.isResponsible = task.ResponsibleUser.UserName.Equals(User.Identity.Name);
             ViewBag.isUser = await IsUserAssignedToTask(task);
+            ViewBag.isOver = (task.TaskStatus.Status.Equals(Shared.StatusConstants.CLOSED) || task.TaskStatus.Status.Equals(Shared.StatusConstants.VERIFY_CLOSED));
             var childs = await db.Tasks.Where(pt => pt.ParentTaskId == task.ID).ToListAsync();
             bool isChildClosed = false;
             if (childs == null)
@@ -86,18 +88,26 @@ namespace TaskManagementSystem.Controllers
         }
 
         // GET: Tasks/Create
-        public ActionResult Create(int? id, bool template = false, bool fromTemplate = false)
+        public ActionResult Create(int? id, int? projectId, bool template = false, bool fromTemplate = false)
         {
             if(id!=null)
             {
                 ViewBag.ParentTask = db.Tasks.First(t => t.ID == id);
+            }
+            if(projectId.HasValue)
+            {
+                ViewBag.ProjectId = new SelectList(db.Projects, "ID", "ProjectName",projectId);
+            }
+            else
+            {
+                ViewBag.ProjectId = new SelectList(db.Projects, "ID", "ProjectName");
             }
             ViewBag.isTemplate = template;
 
             ViewBag.TemplateId = new SelectList(db.Tasks.Where(t => t.isTemplate == true).ToList(),"ID","Title");
             ViewBag.fromTemplate = fromTemplate;
             ViewBag.TaskTypeId = new SelectList(db.TaskTypes, "ID", "Type");
-            ViewBag.ProjectId = new SelectList(db.Projects, "ID", "ProjectName");
+            
             ViewBag.TaskPriorityId = new SelectList(db.TaskPriorities, "ID", "Priority");
             ViewBag.GroupId = new MultiSelectList(db.Groups, "ID", "Name");
             ViewBag.AssignedUserId = new MultiSelectList(db.Users, "Id", "UserName");
@@ -120,6 +130,8 @@ namespace TaskManagementSystem.Controllers
             };
             return Json(template,JsonRequestBehavior.AllowGet);
         }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,isTemplate,Title,Description,TaskPriorityId,ProjectId,TaskTypeId")] Task task,FormCollection fc)
@@ -141,7 +153,7 @@ namespace TaskManagementSystem.Controllers
                 {
                     task.DateStart = DateTime.Now;
                     task.LastUpdate = DateTime.Now;
-                    task.UserCreate = db.Users.First(user => user.UserName.Equals(User.Identity.Name));
+                    task.ResponsibleUser = db.Users.First(user => user.UserName.Equals(User.Identity.Name));
                 }
                 TaskStatus status = db.TaskStatuses.First(s => s.Status.Equals("Открыта"));
                 task.CurrentStatusId = status.ID;
@@ -181,7 +193,7 @@ namespace TaskManagementSystem.Controllers
             ViewBag.ResultId = new SelectList(db.Results, "ID", "ResultText", task.ResultId);
             ViewBag.TaskPriorityId = new SelectList(db.TaskPriorities, "ID", "Priority", task.TaskPriorityId);
             ViewBag.CurrentStatusId = new SelectList(db.TaskStatuses, "ID", "Status", task.CurrentStatusId);
-            ViewBag.UserCreateId = new SelectList(db.Users, "Id", "UserName", task.UserCreateId);
+            ViewBag.UserCreateId = new SelectList(db.Users, "Id", "UserName", task.ResponsibleUserId);
             ViewBag.AssignedUserId = new SelectList(db.Users, "Id", "UserName", task.AssignedUserId);
             ViewBag.GroupId = new MultiSelectList(db.Groups, "ID", "Name", GroupIds);
             return View(task);
@@ -204,7 +216,7 @@ namespace TaskManagementSystem.Controllers
             ViewBag.ResultId = new SelectList(db.Results, "ID", "ResultText", task.ResultId);
             ViewBag.TaskPriorityId = new SelectList(db.TaskPriorities, "ID", "Priority", task.TaskPriorityId);
             ViewBag.CurrentStatusId = new SelectList(db.TaskStatuses, "ID", "Status", task.CurrentStatusId);
-            ViewBag.UserCreateId = new SelectList(db.Users, "Id", "Email", task.UserCreateId);
+            ViewBag.UserCreateId = new SelectList(db.Users, "Id", "Email", task.ResponsibleUserId);
             ViewBag.AssignedUserId = new SelectList(db.Users, "Id", "UserName",task.AssignedUserId);
             return View(task);
         }
@@ -214,7 +226,7 @@ namespace TaskManagementSystem.Controllers
         // сведения см. в статье http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Title,Description,AssignedUserId,DateStart,UserCreateId,CurrentStatusId,TaskPriorityId,ProjectId,ScheduledTime,TaskTypeId")] Task task)
+        public ActionResult Edit([Bind(Include = "ID,Title,Description,AssignedUserId,DateStart,ResponsibleUserId,CurrentStatusId,TaskPriorityId,ProjectId,ScheduledTime,TaskTypeId")] Task task)
         {
             if (ModelState.IsValid)
             {
@@ -229,35 +241,22 @@ namespace TaskManagementSystem.Controllers
             ViewBag.ResultId = new SelectList(db.Results, "ID", "ResultText", task.ResultId);
             ViewBag.TaskPriorityId = new SelectList(db.TaskPriorities, "ID", "Priority", task.TaskPriorityId);
             ViewBag.CurrentStatusId = new SelectList(db.TaskStatuses, "ID", "Status", task.CurrentStatusId);
-            ViewBag.UserCreateId = new SelectList(db.Users, "Id", "Email", task.UserCreateId);
+            ViewBag.UserCreateId = new SelectList(db.Users, "Id", "Email", task.ResponsibleUserId);
             ViewBag.AssignedUserId = new SelectList(db.Users, "Id", "UserName", task.AssignedUserId);
             return View(task);
         }
 
-        // GET: Tasks/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Task task = db.Tasks.Find(id);
-            if (task == null)
-            {
-                return HttpNotFound();
-            }
-            return View(task);
-        }
+        
 
         // POST: Tasks/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        [HttpGet, ActionName("Delete")]
+        public async System.Threading.Tasks.Task<ActionResult> Delete(int id)
         {
             Task task = db.Tasks.Find(id);
+            Helper.DeleteTaskReferences(task, db);
             db.Tasks.Remove(task);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return Json("Success", JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult AssignToMe(int? id)
@@ -288,8 +287,8 @@ namespace TaskManagementSystem.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Task task = db.Tasks.First(t => t.ID == id);
-            task.AssignedUserId = task.UserCreateId;
-            task.AssignedUser = task.UserCreate;
+            task.AssignedUserId = task.ResponsibleUserId;
+            task.AssignedUser = task.ResponsibleUser;
             ChangeStatus(task, Shared.StatusConstants.NEED_INPUT);
             task.LastUpdate = DateTime.Now;
             db.Entry(task).State = EntityState.Modified;
@@ -298,7 +297,7 @@ namespace TaskManagementSystem.Controllers
         }
         public Attachment AddAttachment(int TaskId)
         {
-            Task task = db.Tasks.First(t => t.ID == TaskId);
+            Task task = db.Tasks.Include(p=>p.Project).First(t => t.ID == TaskId);
             Attachment attach = new Attachment();
             foreach (string upload in Request.Files)
             {
@@ -338,7 +337,7 @@ namespace TaskManagementSystem.Controllers
 
         public string GetShortTaskName(Task task)
         {
-            return task.Project.ShortName + "_" + task.ID;
+            return task.Project.ProjectName + "_" + task.ID;
         }
 
         public ActionResult Download(int? attachId)
@@ -373,7 +372,7 @@ namespace TaskManagementSystem.Controllers
             task.LastUpdate = DateTime.Now;
             AddAttachment(task.ID);
             db.Entry(task).State = EntityState.Modified;
-            return View("Details", task);
+            return RedirectToAction("Details", new { id = task.ID });
         }
 
         [HttpGet]
@@ -430,24 +429,33 @@ namespace TaskManagementSystem.Controllers
             return Json(new { Data = fooDict }, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
-        public ActionResult AssignUserPopUp(int? taskId)
+        public ActionResult AssignUserPopUp(int? taskId,bool isChange =false)
         {
             if (taskId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Task task = db.Tasks.First(t => t.ID == taskId);
+            ViewBag.isChange = isChange;
             ViewBag.AssignedUserId = new SelectList(db.Users, "Id", "UserName", task.AssignedUserId);
             return PartialView(task);
         }
         [HttpPost]
-        public ActionResult AssignUserPopUp(int taskId,string AssignedUserId)
+        public ActionResult AssignUserPopUp(int taskId, string AssignedUserId, bool isChange = false)
         {
             Task task = db.Tasks.First(t => t.ID == taskId);
             ApplicationUser user = db.Users.Find(AssignedUserId);
-            task.AssignedUser = user;
-            task.AssignedUserId = user.Id;
-            ChangeStatus(task, Shared.StatusConstants.OPEN);
+            if (!isChange)
+            {
+                task.AssignedUser = user;
+                task.AssignedUserId = user.Id;
+                ChangeStatus(task, Shared.StatusConstants.OPEN);
+            }
+            else
+            {
+                task.ResponsibleUser = user;
+                task.ResponsibleUserId = user.Id;
+            }
             task.LastUpdate = DateTime.Now;
             db.Entry(task).State = EntityState.Modified;
             db.SaveChanges();
@@ -484,8 +492,8 @@ namespace TaskManagementSystem.Controllers
             }
             Task task = db.Tasks.First(t => t.ID == taskId);
             ChangeStatus(task, Shared.StatusConstants.NEED_VERIFY);
-            task.AssignedUserId = task.UserCreateId;
-            task.AssignedUser = task.UserCreate;
+            task.AssignedUserId = task.ResponsibleUserId;
+            task.AssignedUser = task.ResponsibleUser;
             task.Result = result;
             task.LastUpdate = DateTime.Now;
             db.Entry(task).State = EntityState.Modified;

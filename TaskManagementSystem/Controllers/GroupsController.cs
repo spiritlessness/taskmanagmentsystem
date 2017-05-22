@@ -14,6 +14,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace TaskManagementSystem.Controllers
 {
+    [Authorize]
     public class GroupsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -21,6 +22,7 @@ namespace TaskManagementSystem.Controllers
         // GET: Groups
         public async Task<ActionResult> Index()
         {
+            ViewBag.userId = db.Users.FirstOrDefaultAsync(u => u.UserName.Equals(User.Identity.Name)).Result.Id;
             return View(await db.Groups.ToListAsync());
         }
 
@@ -62,6 +64,9 @@ namespace TaskManagementSystem.Controllers
                 {
                     group.Users.Add(db.Users.Find(userId));
                 }
+                var user =await  db.Users.FirstOrDefaultAsync(t => t.UserName.Equals(User.Identity.Name));
+                group.UserCreate = user;
+                group.UserCreateId = user.Id;
                 db.Groups.Add(group);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -150,6 +155,15 @@ namespace TaskManagementSystem.Controllers
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             Group group = await db.Groups.FindAsync(id);
+            var tasks = await db.Tasks.Where(g => g.GroupId == group.ID).ToListAsync();
+            if (tasks != null && tasks.Count > 0)
+            {
+                foreach (var task in tasks)
+                {
+                    task.GroupId = null;
+                }
+
+            }
             db.Groups.Remove(group);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");

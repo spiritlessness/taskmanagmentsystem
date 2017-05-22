@@ -7,8 +7,22 @@
 
 <h2>Завершенные задачи</h2>
 
-@Html.Partial("ShowListTasks", Model)
-
+<div id="tasks-notes" class="tasks-notes">
+    <input type="text" class="search" />
+    <button class="sort" data-sort="title">
+        Сортировать по названию
+    </button>
+    <button class="sort" data-sort="priority">
+        Сортировать по приоритету
+    </button>
+    <button class="sort" data-sort="time">
+        Сортировать по времени
+    </button>
+    <button class="sort" data-sort="type">
+        Сортировать по типу
+    </button>
+    @Html.Partial("ShowListTasks", Model)
+</div>
 
 @section scripts {
     <script type="text/javascript">

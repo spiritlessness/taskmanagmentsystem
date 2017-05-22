@@ -3,26 +3,26 @@
 
 @{
     ViewBag.Title = "Details";
-    bool isUser = ViewBag.isUser;
+    bool isAssigned = ViewBag.isUser;
+    bool isResponsible = ViewBag.isResponsible;
     string userName = User.Identity.Name;
     string groupName = ViewBag.GroupName;
     List<TaskManagementSystem.Models.Task> childs = ViewBag.childs;
     bool isChilds = (childs != null && childs.Count > 0);
     bool isChildsClosed = ViewBag.isChildsClosed;
+    bool isOver = ViewBag.isOver;
 }
 
 <h2>@Html.DisplayFor(model => model.Title)</h2>
-@Html.ActionLink("Создать подзадачу","Create","Tasks", new { id = Model.ID }, new { @class = "btn btn-info btn-sm glyphicon glyphicon-add" })
+@if (!isOver) { @Html.ActionLink("Создать подзадачу", "Create", "Tasks", new { id = Model.ID }, new { @class = "btn btn-info btn-sm glyphicon glyphicon-add" })}
 <div>
     <h4>@Html.DisplayFor(model => model.Description)</h4>
     <hr />
-    @if (Model.TaskStatus.Status == Shared.StatusConstants.CLOSED ||
-                    Model.TaskStatus.Status == Shared.StatusConstants.VERIFY_CLOSED
-                    || (Model.UserCreate.UserName == User.Identity.Name && Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY))
+    @if (isOver || (Model.ResponsibleUser.UserName == User.Identity.Name && Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY))
     {
        <h4> <b>Результат:</b> @Html.DisplayFor(model => model.Result.ResultText) </h4> 
-          if (Model.Result.Attachment != null)
-          {
+        if (Model.Result != null && Model.Result.Attachment != null)
+        {
             @Html.ActionLink(Model.Result.Attachment.FileName, "Download", new { attachId = Model.Result.Attachment.ID })
           }
         <hr/>
@@ -37,7 +37,7 @@
             @(String.IsNullOrEmpty(groupName) ? Html.DisplayFor(model => model.AssignedUser.UserName) : Html.ActionLink(Model.Group.Name, "Details", "Groups", new { id = Model.GroupId }, null))
             
 
-            @if(isUser &&
+            @if((isAssigned|| User.IsInRole("Admin") || isResponsible) &&
                 (Model.TaskStatus.Status == Shared.StatusConstants.NEED_INPUT ||
                 Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY ||
                 Model.TaskStatus.Status == Shared.StatusConstants.OPEN))
@@ -57,7 +57,7 @@
         <dd>
             @Html.ActionLink(Model.Project.ProjectName, "Details","Projects",new { id = Model.ProjectId },null)
         </dd>
-        @if (Model.TaskStatus.Status == Shared.StatusConstants.OPEN && isUser)
+        @if (Model.TaskStatus.Status == Shared.StatusConstants.OPEN && isAssigned)
         {
             <dt></dt>
             <dd>
@@ -103,18 +103,32 @@
 
         <dd>
             @Html.DisplayFor(model => model.TaskStatus.Status)
-            @if (isUser && Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY)
+            @if (isResponsible && Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY)
             {
                 @Html.ActionLink("Проверена", "Verified", "Tasks", new { id = Model.ID }, new { @class="btn btn-success btn-sm glyphicon glyphicon-thumbs-up" })<br />
             }
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.UserCreate)
+            @Html.DisplayNameFor(model => model.ResponsibleUser)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.UserCreate.UserName)
+            @Html.DisplayFor(model => model.ResponsibleUser.UserName)
+            @if (isResponsible)
+            {
+            @Ajax.ActionLink("Изменить", "AssignUserPopUp", "Tasks",
+                        new { taskId = Model.ID, isChange = true }, new AjaxOptions
+                        {
+                            HttpMethod = "GET",
+                            UpdateTargetId = "result3",
+                            InsertionMode = InsertionMode.Replace,
+                            OnSuccess = "openPopup3"
+                        },
+                        new { @class = "btn btn-default btn-sm	glyphicon glyphicon-edit-sign", @id = "assignedUser" })
+            <br />
+            <div id="result3" style="display:none;"></div>
+            }
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.DateStart)
@@ -131,6 +145,16 @@
         <dd>
             @Html.DisplayFor(model => model.LastUpdate)
         </dd>
+        @if (Model.ScheduledTime != null)
+        {
+        <dt>
+            @Html.DisplayNameFor(model => model.ScheduledTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ScheduledTime.Value)
+        </dd>
+        }
         @if (Model.ParentTask != null)
         {
         <dt>
@@ -201,7 +225,7 @@
            }
 </div>
 <p>
-@if (Model.UserCreate.UserName == User.Identity.Name || User.IsInRole("Admin"))
+@if (Model.ResponsibleUser.UserName == User.Identity.Name || User.IsInRole("Admin"))
 {
     @Html.ActionLink("Изменить", "Edit", new { id = Model.ID }, new { @class = "btn btn-primary btn-sm glyphicon glyphicon-edit" })
 }
@@ -254,11 +278,33 @@
                 });
             }
         });
+        if ($("#resul3")) {
+            $("#result3").dialog({
+                autoOpen: false,
+                width: 500,
+                height: 'auto',
+                modal: true
+            });
+        }
         function openPopup() {
+            $("#result").show();
             $("#result").dialog("open");
         }
         function openPopup2() {
+            $("#result2").show();
             $("#result2").dialog("open");
         }
+        function openPopup3() {
+            $("#result3").show();
+            $("#result3").dialog("open");
+        }
+
+        function closepopup(){
+            $("#result1").hide();
+            $("#result2").hide();
+            $("#result3").hide();
+        }
+        
+
     </script>
 }

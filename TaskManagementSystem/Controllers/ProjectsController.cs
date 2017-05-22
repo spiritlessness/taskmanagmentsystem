@@ -10,6 +10,7 @@ using TaskManagementSystem.Models;
 
 namespace TaskManagementSystem.Controllers
 {
+    [Authorize]
     public class ProjectsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -114,21 +115,18 @@ namespace TaskManagementSystem.Controllers
         // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async System.Threading.Tasks.Task<ActionResult> DeleteConfirmed(int id)
         {
             Project project = db.Projects.Include(t => t.Tasks).First(p => p.ID == id);
-            if(project.Tasks != null && project.Tasks.Count != 0)
+            if (project.Tasks != null && project.Tasks.Count != 0)
             {
-                foreach(var task in db.Tasks.Include(r => r.Result).Include(a => a.Attachments).Where(p=>p.ProjectId == id).ToList())
+                foreach (var task in db.Tasks.Include(r => r.Result).Include(a => a.Attachments).Where(p => p.ProjectId == id).ToList())
                 {
-                    if (task.Result != null)
-                        Repository.Delete<Result>(task.Result, db);
-                    if (task.Attachments.Count > 0)
-                        db.Attachments.RemoveRange(task.Attachments);
+                    Helper.DeleteTaskReferences(task, db);
                 }
                 db.Tasks.RemoveRange(project.Tasks);
             }
-            Repository.Delete<Project>(project,db);
+            Repository.Delete<Project>(project, db);
             return RedirectToAction("Index");
         }
 
