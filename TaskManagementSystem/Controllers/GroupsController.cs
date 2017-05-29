@@ -162,8 +162,8 @@ namespace TaskManagementSystem.Controllers
                 {
                     task.GroupId = null;
                 }
-
             }
+            group.UserCreateId = null;
             db.Groups.Remove(group);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");

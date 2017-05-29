@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Edit";
+    string usersIds = "'";
 }
 
 @using (Html.BeginForm())
@@ -36,7 +37,7 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Назад к списку", "Index")
 </div>
 
 @section Scripts {
@@ -44,6 +45,13 @@
 <script type="text/javascript">
 
         $(document).ready(function () {
+
+            var users = @Html.Raw(Json.Encode(Model.Users));
+            var userIds = [];
+            for(var i =0;i<users.length;i++)
+                userIds.push(users[i].Id)
+            debugger
+            $('#Users').val(userIds);
             $("#Users").multiselect();
         });
 

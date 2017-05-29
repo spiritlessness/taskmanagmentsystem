@@ -1,14 +1,24 @@
 ﻿body {
+    background-color:#556c83;
     padding-top: 50px;
     padding-bottom: 20px;
 }
 
+@font-face {font-family:'Vox';src: url("../fonts/10587.ttf");}
+
+.diffont {
+    font-family:Vox;
+    
+}
+.navbar-inverse .navbar-nav > li > a{
+color: burlywood;
+}
 /* Set padding to keep content from hitting the edges */
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
     color:black;
-    background-color:#556c83;
+
 }
 
 a {
@@ -44,15 +54,6 @@ padding: 0;
 }
 .chat_inner{
   padding:0 10px;
-}
-h3{
-  text-align:center;
-  color:#fff;
-  font-size:16px;
-  text-transform:uppercase;
-  line-height:1em;
-  padding:5px 0;
-  background:#354759;
 }
 .clearfix{
   clear:both;
@@ -96,7 +97,6 @@ h3{
 
 span { 
     display:block;
-    width:150px;
     word-wrap:break-word;
 }
 
@@ -118,6 +118,9 @@ span {
 
 @font-face {font-family:'StudioScriptC';src: url("../fonts/StudioScriptC.otf");}
 
+.title{
+    font-size:14px;
+}
 .tasks-notes{
     background-image:url("../Images/bkg_banner.jpg");
     background-repeat: no-repeat;

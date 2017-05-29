@@ -7,7 +7,6 @@
                 @foreach (var item in Model)
                 {
                     <li class="li-tasks-notes" >
-                        
                         <a class="sad" href="@Url.Action("Details","Tasks",new { id = item.ID })" 
                         style="background-color:@Shared.Helper.GetColorByPriority(item.TaskPriority.Priority);
                          border: @Shared.Helper.GetBorderByStatus(item.TaskStatus.Status);">
@@ -15,8 +14,16 @@
                             {
                             <b style="color:black;float:right"> !!!</b>
                             }
-                            <h4 class="title"> @item.Title</h4>
-                            <p class="description"> @item.TaskType.Type</p>
+                            <b><span class="title"> @item.Title</span></b>
+                            <span class="description"> @item.TaskType.Type</span>
+                            @if (item.AssignedUser != null)
+                            {
+                            <span>@item.AssignedUser.UserName</span>
+                            }
+                            else
+                            {
+                                <span>@item.Group.Name</span>
+                            }
                             <p class="priority" style="display:none">@item.TaskPriorityId</p>
                             <p class="time" style="display:none">@if (item.ScheduledTime.HasValue) {@item.ScheduledTime.Value.ToString("o");}</p>
                             <p class="type" style="display:none">@item.TaskTypeId</p>
@@ -24,6 +31,9 @@
                     </li>
                 }
             </ul>
-            <ul class="pagination"> </ul>
-}
+          if (Model.Count() > 10)
+          {
+               <ul class="pagination"> </ul>
+          }
+          }
     

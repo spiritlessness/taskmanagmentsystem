@@ -171,6 +171,7 @@ namespace TaskManagementSystem.Controllers
                 if (GroupIds != null)
                     foreach (var groupId in GroupIds)
                 {
+                    task.ParentTaskId = null;
                     task.AssignedUser = null;
                     task.AssignedUserId = null;
                     task.Group = db.Groups.Find(Int32.Parse(groupId));
@@ -178,6 +179,19 @@ namespace TaskManagementSystem.Controllers
                     db.SaveChanges();
                     AddAttachment(task.ID);
                     db.SaveChanges();
+                    var ParentTaskId = task.ID;
+                     
+                        foreach (var user in task.Group.Users)
+                        {
+                            task.GroupId = null;
+                            task.AssignedUserId = user.Id;
+                            db.Tasks.Add(task);
+                            db.SaveChanges();
+                            task.ParentTaskId = ParentTaskId;
+                            db.Entry(task).State = EntityState.Modified;
+                            AddAttachment(task.ID);
+                            db.SaveChanges();
+                        }
                 }
                 if(GroupIds == null && AssignedUserIds == null && task.isTemplate)
                 {
@@ -462,25 +476,36 @@ namespace TaskManagementSystem.Controllers
             return RedirectToAction("Details",new { id = task.ID });
         }
 
-        public ActionResult DonePopUp(int? taskId)
+        public async System.Threading.Tasks.Task<ActionResult> DonePopUp(int? taskId)
         {
             if (taskId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Task task = db.Tasks.First(t => t.ID == taskId);
+            Task task = db.Tasks.Include(t => t.ParentTask).First(t => t.ID == taskId);
             if (task.TaskType.Type == Shared.TypesConstants.NO_CONFIRMATION)
             {
                 task.LastUpdate = DateTime.Now;
                 ChangeStatus(task, Shared.StatusConstants.CLOSED);
                 db.Entry(task).State = EntityState.Modified;
                 db.SaveChanges();
+                if (task.ParentTask != null && task.ParentTask.GroupId !=null)
+                {
+                    var siblings = await db.Tasks.Where(t => t.ParentTaskId == task.ParentTaskId).Where(t => (!t.TaskStatus.Status.Equals(Shared.StatusConstants.CLOSED) && !t.TaskStatus.Status.Equals(Shared.StatusConstants.VERIFY_CLOSED))).ToListAsync();
+                    if (siblings.Count() == 0)
+                    {
+                        var parentTask = task.ParentTask;
+                        ChangeStatus(parentTask, Shared.StatusConstants.CLOSED);
+                        db.Entry(parentTask).State = EntityState.Modified;
+                        await db.SaveChangesAsync();
+                    }
+                }
                 return RedirectToAction("Details", new { id = task.ID });
             }
             return PartialView(task);
         }
         [HttpPost]
-        public ActionResult DonePopUp(int taskId, string resultText)
+        public async System.Threading.Tasks.Task<ActionResult> DonePopUp(int taskId, string resultText)
         {
             Result result = new Result();
             Attachment attach = AddAttachment(taskId);
@@ -502,17 +527,28 @@ namespace TaskManagementSystem.Controllers
             return RedirectToAction("Details", new { id = task.ID });
         }
 
-        public ActionResult Verified(int? id)
+        public async System.Threading.Tasks.Task<ActionResult> Verified(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Task task = db.Tasks.First(t => t.ID == id);
+            Task task = db.Tasks.Include(t=>t.ParentTask).First(t => t.ID == id);
             ChangeStatus(task, Shared.StatusConstants.VERIFY_CLOSED);
             task.LastUpdate = DateTime.Now;
             db.Entry(task).State = EntityState.Modified;
             db.SaveChanges();
+            if (task.ParentTask != null && task.ParentTask.GroupId != null)
+            {
+                var siblings = await db.Tasks.Where(t => t.ParentTaskId == task.ParentTaskId).Where(t => (!t.TaskStatus.Status.Equals(Shared.StatusConstants.CLOSED) && !t.TaskStatus.Status.Equals(Shared.StatusConstants.VERIFY_CLOSED))).ToListAsync();
+                if (siblings.Count() == 0)
+                {
+                    var parentTask = task.ParentTask;
+                    ChangeStatus(parentTask, Shared.StatusConstants.VERIFY_CLOSED);
+                    db.Entry(parentTask).State = EntityState.Modified;
+                    await db.SaveChangesAsync();
+                }
+            }
             return RedirectToAction("Details", new { id = id });
         }
         protected override void Dispose(bool disposing)

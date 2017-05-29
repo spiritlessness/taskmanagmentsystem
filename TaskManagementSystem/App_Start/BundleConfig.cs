@@ -41,7 +41,7 @@ namespace TaskManagementSystem
                       "~/Content/DataTables/css/jquery.dataTables.min.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/datetimepicker").Include(
-"~/Scripts/jquery.datetimepicker.js"));
+                        "~/Scripts/jquery.datetimepicker.js"));
 
             bundles.Add(new StyleBundle("~/Content/datetimepicker").Include(
                       "~/Content/jquery.datetimepicker.css"));

@@ -177,6 +177,10 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Constants\NotificationMessagesFormatConstants.cs" />
+    <Compile Include="Constants\PriorityConstants.cs" />
+    <Compile Include="Constants\StatusConstants.cs" />
+    <Compile Include="Constants\TypesConstants.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\GroupsController.cs" />
@@ -198,6 +202,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helper.cs" />
+    <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Migrations\201705131924478_a.cs" />
     <Compile Include="Migrations\201705131924478_a.Designer.cs">
       <DependentUpon>201705131924478_a.cs</DependentUpon>
@@ -217,6 +222,14 @@
     <Compile Include="Migrations\201705211644187_adducforgroup.cs" />
     <Compile Include="Migrations\201705211644187_adducforgroup.Designer.cs">
       <DependentUpon>201705211644187_adducforgroup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705292003208_aaaaaaa.cs" />
+    <Compile Include="Migrations\201705292003208_aaaaaaa.Designer.cs">
+      <DependentUpon>201705292003208_aaaaaaa.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705292005457_aaaaaaa1.cs" />
+    <Compile Include="Migrations\201705292005457_aaaaaaa1.Designer.cs">
+      <DependentUpon>201705292005457_aaaaaaa1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -440,7 +453,6 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Images\bkg_banner.jpg" />
-    <Content Include="Images\gvozd.png" />
     <Content Include="Scripts\bootstrap-multiselect.js" />
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
@@ -456,6 +468,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="fonts\10587.ttf" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -629,12 +642,6 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shared\Shared.csproj">
-      <Project>{cd760b25-72cc-4107-8e98-5c0a27aca284}</Project>
-      <Name>Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Migrations\201705131924478_a.resx">
       <DependentUpon>201705131924478_a.cs</DependentUpon>
     </EmbeddedResource>
@@ -649,6 +656,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705211644187_adducforgroup.resx">
       <DependentUpon>201705211644187_adducforgroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705292003208_aaaaaaa.resx">
+      <DependentUpon>201705292003208_aaaaaaa.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705292005457_aaaaaaa1.resx">
+      <DependentUpon>201705292005457_aaaaaaa1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

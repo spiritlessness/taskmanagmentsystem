@@ -15,10 +15,12 @@ namespace TaskManagementSystem.Entities
             Users = new HashSet<ApplicationUser>();
         }
         [Required]
+        [Display(Name ="Название")]
         public string Name { get; set; }
         [ForeignKey("UserCreate")]
         public string UserCreateId { get; set; }
         public virtual ApplicationUser UserCreate { get; set; }
+
         public virtual ICollection<ApplicationUser> Users { get; set; }
     }
 }

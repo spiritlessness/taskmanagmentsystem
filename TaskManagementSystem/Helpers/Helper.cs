@@ -41,6 +41,8 @@ namespace Shared
 
             if (status.Equals(StatusConstants.NEED_VERIFY))
                 result = "10px solid yellow";
+            if (status.Equals(StatusConstants.NEED_INPUT))
+                result = "10px solid MistyRose";
             return result;
         }
 

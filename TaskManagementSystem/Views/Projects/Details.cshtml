@@ -28,21 +28,26 @@
     @if ((ViewBag.Tasks as List<TaskManagementSystem.Models.Task>).Count != 0)
     {
         <dd>
-            <table>
+            <table class="table">
                 <thead>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Tasks.FirstOrDefault().Title)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Tasks.FirstOrDefault().TaskStatus.Status)
-       
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Tasks.FirstOrDefault().TaskPriority.Priority)
-                    </th>
-                    <th>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Tasks.FirstOrDefault().Title)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Tasks.FirstOrDefault().AssignedUser)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Tasks.FirstOrDefault().TaskStatus.Status)
 
-                    </th>
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Tasks.FirstOrDefault().TaskPriority.Priority)
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
                 </thead>
 
                 <tbody>
@@ -50,6 +55,14 @@
                     {
                         <tr id="@task.ID">
                             <td> @Html.ActionLink(task.Title, "Details", "Tasks", new { id = task.ID },null)  </td>
+                            @if (task.AssignedUser != null)
+                            {
+                                <td>@task.AssignedUser.UserName</td>
+                            }
+                            else
+                            {
+                                <td>@task.Group.Name</td>
+                            }
                             <td> @task.TaskStatus.Status </td>
                             <td> @task.TaskPriority.Priority </td>
                             @if (User.IsInRole("Admin") || Model.TeamLead.UserName.Equals(User.Identity.Name))

@@ -8,44 +8,59 @@
     var myCreatedTasks = (List<TaskManagementSystem.Models.Task>)ViewBag.myCreatedTasks;
 }
 
-<h2>Доска</h2>
-
 @if (assignedTasks != null && assignedTasks.Count != 0)
 {
     <div>
-        <p>
+        <h2>
             Ваши задачи:
-        </p>
+        </h2>
         <div id="tasks-notes" class="tasks-notes">
             <input type="text" class="search" />
-            <button class="sort" data-sort="title">
-                Сортировать по названию
-            </button>
-            <button class="sort" data-sort="priority">
-                Сортировать по приоритету
-            </button>
-            <button class="sort" data-sort="time">
-                Сортировать по времени
-            </button>
-            <button class="sort" data-sort="type">
-                Сортировать по типу
-            </button>
+            <select class="sort">
+                <option value="title">
+                    Сортировать по названию
+                </option>
+                <option value="priority">
+                    Сортировать по приоритету
+                </option>
+                <option value="time">
+                    Сортировать по времени
+                </option>
+                <option value="type">
+                    Сортировать по типу
+                </option>
+            </select>
             @Html.Partial("ShowListTasks", assignedTasks)
         </div>
         </div>
 }
 else
 {
-    <p>В данный момент у вас нет задач</p>
+    <h2>В данный момент у вас нет задач</h2>
 }
 
 @if (myCreatedTasks != null && myCreatedTasks.Count != 0)
 {
     
-        <p>
-            Созданные вами задачи:
-        </p>
-        <div class="tasks-notes">
+        <h2>
+            Вы отвественны за задачи:
+        </h2>
+        <div id="tasks-notes2" class="tasks-notes">
+            <input type="text" class="search" />
+            <select class="sort2">
+                <option value="title">
+                    Сортировать по названию
+                </option>
+                <option value="priority">
+                    Сортировать по приоритету
+                </option>
+                <option value="time">
+                    Сортировать по времени
+                </option>
+                <option value="type">
+                    Сортировать по типу
+                </option>
+            </select>
             @Html.Partial("ShowListTasks", myCreatedTasks)
 
         </div>
@@ -83,6 +98,28 @@ else
 
         GetNotifications();
     })
+
+    var list = new List('tasks-notes', {
+        valueNames: ['title', 'description', 'priority', 'time', 'type'],
+        page: 10,
+        pagination: true
+    }
+                );
+
+    $('select.sort').change(function () {
+        var selection = $(this).val();
+        list.sort(selection);
+    });
+    var list2 = new List('tasks-notes2', {
+        valueNames: ['title', 'description', 'priority', 'time', 'type'],
+        page: 10,
+        pagination: true
+    }
+            );
+    $('select.sort2').change(function () {
+        var selection = $(this).val();
+        list.sort(selection);
+    });
  </script>
 }
     

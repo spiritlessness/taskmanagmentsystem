@@ -23,6 +23,7 @@ namespace TaskManagementSystem
             }
             if (task.Attachments.Count > 0)
                 db.Attachments.RemoveRange(task.Attachments);
+            db.SaveChanges();
         }
     }
 }

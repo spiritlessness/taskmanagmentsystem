@@ -27,7 +27,7 @@
                 @Html.ActionLink("ТМ", "Index", "Dashboard", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav diffont">
                     <li>@Html.ActionLink("Домашняя страница", "Index", "Dashboard")</li>
                     <li>@Html.ActionLink("Проекты", "Index", "Projects")</li>
                     <li>@Html.ActionLink("Задачи", "Index", "Tasks")</li>
@@ -43,13 +43,7 @@
     </div>
     <div class="container body-content">
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year – приложение ASP.NET</p>
-        </footer>
     </div>
-
-
     @RenderSection("scripts", required: false)
     <script type="text/javascript">
     </script>

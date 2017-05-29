@@ -8,6 +8,7 @@ using Shared;
 using TaskManagementSystem.Entities;
 using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskManagementSystem.Models
 {
@@ -25,7 +26,7 @@ namespace TaskManagementSystem.Models
             // Здесь добавьте утверждения пользователя
             return userIdentity;
         }
-
+        [InverseProperty("Users")]
         public virtual ICollection<Group> Groups { get; set; }
         public bool isConfirmed { get; set; }
     }

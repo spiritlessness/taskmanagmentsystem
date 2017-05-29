@@ -14,7 +14,7 @@
 }
 
 <h2>@Html.DisplayFor(model => model.Title)</h2>
-@if (!isOver) { @Html.ActionLink("Создать подзадачу", "Create", "Tasks", new { id = Model.ID }, new { @class = "btn btn-info btn-sm glyphicon glyphicon-add" })}
+@if (!isOver && isResponsible) { @Html.ActionLink("Создать подзадачу", "Create", "Tasks", new { id = Model.ID }, new { @class = "btn btn-info btn-sm glyphicon glyphicon-add" })}
 <div>
     <h4>@Html.DisplayFor(model => model.Description)</h4>
     <hr />
@@ -40,7 +40,7 @@
             @if((isAssigned|| User.IsInRole("Admin") || isResponsible) &&
                 (Model.TaskStatus.Status == Shared.StatusConstants.NEED_INPUT ||
                 Model.TaskStatus.Status == Shared.StatusConstants.NEED_VERIFY ||
-                Model.TaskStatus.Status == Shared.StatusConstants.OPEN))
+                Model.TaskStatus.Status == Shared.StatusConstants.OPEN) && Model.GroupId == null)
             {
                 @Ajax.ActionLink("Назначить пользователя", "AssignUserPopUp","Tasks",
                new { taskId = Model.ID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "result",
@@ -57,7 +57,7 @@
         <dd>
             @Html.ActionLink(Model.Project.ProjectName, "Details","Projects",new { id = Model.ProjectId },null)
         </dd>
-        @if (Model.TaskStatus.Status == Shared.StatusConstants.OPEN && isAssigned)
+        @if (Model.TaskStatus.Status == Shared.StatusConstants.OPEN && isAssigned && Model.GroupId == null)
         {
             <dt></dt>
             <dd>
@@ -173,7 +173,7 @@
                 <ul>
                     @foreach (var a in childs)
                     {
-                        <li> @Html.ActionLink(a.Title, "Details", new { id = a.ID }) : @a.TaskStatus.Status</li>
+                        <li> @Html.ActionLink(a.Title, "Details", new { id = a.ID }) : @a.TaskStatus.Status : @a.AssignedUser.UserName</li>
                     }
                 </ul>
             </dd>
@@ -205,7 +205,7 @@
 
     }
     <hr/>
-    <div id="divComments" class="chatbox container">
+    <div id="divComments" class="chatbox">
         <h3>Комментарии: </h3>
         <hr />
         <div class="chat_inner" >
@@ -220,7 +220,8 @@
            }))
            {
              <input name="taskId" type="hidden" value="@Model.ID" />
-            @Html.TextArea("comment")
+            @Html.TextArea("comment",new { @rows = "4",@cols="300" })
+              <br />
             <input type="submit" value="Добавить комментарий" />
            }
 </div>
@@ -248,7 +249,6 @@
             $.getJSON('@Url.Action("GetComments", new { id = Model.ID })', function (data) {
                 var items = [];
                 for (var i = 0; i < data.Data.length; i++) {
-                    console.log(data.Data[i].Key);
                     items.push("<div class='clearfix " + (("@User.Identity.Name" == data.Data[i].Key) ? "chat_out" : "chat_in") + "'>" +
                     "<span class='message'>" +
                         data.Data[i].Value + "</span><span class='author'>"
@@ -258,9 +258,10 @@
                 $("#divComments").html(items.join(' '))
             });
         }
-        setInterval(GetComments(), 1000);
+
 
         $(document).ready(function () {
+            setInterval(GetComments, 1000);
             if ($("#result")) {
                 $("#result").dialog({
                     autoOpen: false,

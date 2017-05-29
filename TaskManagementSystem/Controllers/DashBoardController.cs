@@ -18,10 +18,10 @@ namespace TaskManagementSystem.Controllers
         {
 
             ApplicationUser user = await db.Users.FirstAsync(u => u.UserName.Equals(User.Identity.Name));
-            var myTasks = await db.Tasks.Where(t => t.AssignedUserId == user.Id).Where(t => t.isTemplate == false).ToListAsync();
+            var myTasks = await db.Tasks.Where(t => t.AssignedUserId == user.Id).Where(t => t.isTemplate == false).Where(t => (!t.TaskStatus.Status.Equals(Shared.StatusConstants.CLOSED) && !t.TaskStatus.Status.Equals(Shared.StatusConstants.VERIFY_CLOSED))).ToListAsync();
             var allGroups = await db.Groups.ToListAsync();
             var myGroups = new List<Group>();
-            var myCreatedTasks = await db.Tasks.Where(u => u.ResponsibleUserId == user.Id).ToListAsync();
+            var myCreatedTasks = await db.Tasks.Where(u => u.ResponsibleUserId == user.Id).Where(t => t.isTemplate == false).Where(t => (!t.TaskStatus.Status.Equals(Shared.StatusConstants.CLOSED) && !t.TaskStatus.Status.Equals(Shared.StatusConstants.VERIFY_CLOSED))).ToListAsync();
             foreach(var gr in allGroups)
             {
                 if (gr.Users.Contains(user)) myGroups.Add(gr);
@@ -42,7 +42,11 @@ namespace TaskManagementSystem.Controllers
 
             List<KeyValuePair<string, string>> notifications = new List<KeyValuePair<string, string>>();
             var todayTasksCount = myTasks.Where(t => t.ScheduledTime.Value.Date == DateTime.Now.Date).Count();
+            var needVerifyCount = myTasks.Where(t => t.TaskStatus.Status.Equals(Shared.Constants.NotificationMessagesFormatConstants.VERIFY_TASKS)).Count();
+            if(todayTasksCount > 0)
             notifications.Add(new KeyValuePair<string, string>("info", String.Format(Shared.Constants.NotificationMessagesFormatConstants.TODAY_TASKS, todayTasksCount)));
+            if(needVerifyCount > 0)
+            notifications.Add(new KeyValuePair<string, string>("info", String.Format(Shared.Constants.NotificationMessagesFormatConstants.VERIFY_TASKS, todayTasksCount)));
 
             return Json(new { Data = notifications }, JsonRequestBehavior.AllowGet);
         }
